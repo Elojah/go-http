@@ -10,16 +10,15 @@ import (
 
 // Service embed a http server.
 type Service struct {
-	Router *mux.Router
-
-	srv *http.Server
+	*http.Server
+	*mux.Router
 }
 
 // Dial connects http server.
 func (s *Service) Dial(ctx context.Context, cfg Config) error {
 	s.Router = mux.NewRouter()
 
-	s.srv = &http.Server{
+	s.Server = &http.Server{
 		Addr:    strings.Join([]string{cfg.Hostname, cfg.Port}, ":"),
 		Handler: s.Router,
 	}
@@ -28,5 +27,5 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 }
 
 func (s *Service) Close(ctx context.Context) error {
-	return s.srv.Shutdown(ctx)
+	return s.Server.Shutdown(ctx)
 }
