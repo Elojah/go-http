@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 // Service embed a http server.
@@ -21,6 +22,14 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 	s.Server = &http.Server{
 		Addr:    strings.Join([]string{cfg.Hostname, cfg.Port}, ":"),
 		Handler: s.Router,
+	}
+
+	if len(cfg.AllowedCORS) > 0 {
+		c := cors.New(cors.Options{
+			AllowedOrigins: cfg.AllowedCORS,
+		})
+
+		s.Server.Handler = c.Handler(s.Server.Handler)
 	}
 
 	return nil
