@@ -36,5 +36,5 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 }
 
 func (s *Service) Close(ctx context.Context) error {
-	return s.Server.Close()
+	return s.Server.Shutdown(ctx)
 }
