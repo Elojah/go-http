@@ -22,15 +22,28 @@ type Service struct {
 func (s *Service) Dial(ctx context.Context, cfg Config) error {
 	s.Router = mux.NewRouter()
 
-	c := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(cfg.HostWhitelist...),
+	var tlscfg *tls.Config
+
+	if len(cfg.HostWhitelist) > 0 {
+		c := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(cfg.HostWhitelist...),
+		}
+
+		tlscfg = &tls.Config{GetCertificate: c.GetCertificate, MinVersion: tls.VersionTLS12}
+	} else {
+		cert, err := tls.LoadX509KeyPair(cfg.Cert, cfg.Key)
+		if err != nil {
+			return err
+		}
+
+		tlscfg = &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
 	}
 
 	s.Server = &http.Server{
 		Addr:              strings.Join([]string{cfg.Hostname, cfg.Port}, ":"),
 		ReadHeaderTimeout: time.Minute,
-		TLSConfig:         &tls.Config{GetCertificate: c.GetCertificate, MinVersion: tls.VersionTLS12},
+		TLSConfig:         tlscfg,
 		Handler:           s.Router,
 	}
 

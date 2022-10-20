@@ -6,6 +6,8 @@ type Config struct {
 	Port          string   `json:"port" env:"HTTP_PORT" env-default:"8080"`
 	AllowedCORS   []string `json:"allowed_cors" env:"HTTP_ALLOWED_CORS"`
 	HostWhitelist []string `json:"host_whitelist" env:"HTTP_HOST_WHITELIST"`
+	Cert          string   `json:"cert" env:"HTTP_CERT"`
+	Key           string   `json:"key" env:"HTTP_KEY"`
 }
 
 // ClientConfig is http service config.
