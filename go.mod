@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/rs/cors v1.7.0
+	github.com/rs/cors v1.8.2
 	golang.org/x/crypto v0.1.0
 )
 
