@@ -2,11 +2,14 @@ package http
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Service embed a http server.
@@ -19,9 +22,16 @@ type Service struct {
 func (s *Service) Dial(ctx context.Context, cfg Config) error {
 	s.Router = mux.NewRouter()
 
+	c := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(cfg.HostWhitelist...),
+	}
+
 	s.Server = &http.Server{
-		Addr:    strings.Join([]string{cfg.Hostname, cfg.Port}, ":"),
-		Handler: s.Router,
+		Addr:              strings.Join([]string{cfg.Hostname, cfg.Port}, ":"),
+		ReadHeaderTimeout: time.Minute,
+		TLSConfig:         &tls.Config{GetCertificate: c.GetCertificate, MinVersion: tls.VersionTLS12},
+		Handler:           s.Router,
 	}
 
 	if len(cfg.AllowedCORS) > 0 {

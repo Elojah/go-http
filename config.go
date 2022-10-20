@@ -2,11 +2,10 @@ package http
 
 // Config is http service config.
 type Config struct {
-	Hostname    string   `json:"hostname" env:"HTTP_HOSTNAME" env-default:"0.0.0.0"`
-	Port        string   `json:"port" env:"HTTP_PORT" env-default:"8080"`
-	AllowedCORS []string `json:"allowed_cors" env:"HTTP_ALLOWED_CORS"`
-	Cert        string   `json:"cert" env:"HTTP_CERT"`
-	Key         string   `json:"key" env:"HTTP_KEY"`
+	Hostname      string   `json:"hostname" env:"HTTP_HOSTNAME" env-default:"0.0.0.0"`
+	Port          string   `json:"port" env:"HTTP_PORT" env-default:"8080"`
+	AllowedCORS   []string `json:"allowed_cors" env:"HTTP_ALLOWED_CORS"`
+	HostWhitelist []string `json:"host_white_list" env:"HTTP_HOST_WHITELIST"`
 }
 
 // ClientConfig is http service config.
