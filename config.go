@@ -8,6 +8,7 @@ type Config struct {
 	HostWhitelist []string `json:"host_whitelist" env:"HTTP_HOST_WHITELIST"`
 	Cert          string   `json:"cert" env:"HTTP_CERT"`
 	Key           string   `json:"key" env:"HTTP_KEY"`
+	CSR           string   `json:"csr" env:"HTTP_CSR"`
 	Insecure      bool     `json:"insecure" env:"HTTP_INSECURE"`
 }
 

@@ -3,6 +3,8 @@ package http
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -24,6 +26,19 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 
 	var tlscfg *tls.Config
 
+	var pool *x509.CertPool
+
+	if cfg.CSR != "" {
+		pool = x509.NewCertPool()
+
+		pem, err := ioutil.ReadFile(cfg.CSR)
+		if err != nil {
+			return err
+		}
+
+		pool.AppendCertsFromPEM(pem)
+	}
+
 	if len(cfg.HostWhitelist) > 0 {
 		c := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
@@ -31,6 +46,7 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 		}
 
 		tlscfg = &tls.Config{
+			RootCAs:            pool,
 			GetCertificate:     c.GetCertificate,
 			MinVersion:         tls.VersionTLS12,
 			InsecureSkipVerify: cfg.Insecure, //nolint: gosec
@@ -42,6 +58,7 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 		}
 
 		tlscfg = &tls.Config{
+			RootCAs:            pool,
 			Certificates:       []tls.Certificate{cert},
 			MinVersion:         tls.VersionTLS12,
 			InsecureSkipVerify: cfg.Insecure, //nolint: gosec
