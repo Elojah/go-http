@@ -1,6 +1,6 @@
 steps:
     - id: tidy
-      name: golang:1.15.2
+      name: golang:1.19.1
       args: ['make', 'tidy']
     - id: check
       name: golangci/golangci-lint

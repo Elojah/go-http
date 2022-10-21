@@ -30,14 +30,22 @@ func (s *Service) Dial(ctx context.Context, cfg Config) error {
 			HostPolicy: autocert.HostWhitelist(cfg.HostWhitelist...),
 		}
 
-		tlscfg = &tls.Config{GetCertificate: c.GetCertificate, MinVersion: tls.VersionTLS12}
+		tlscfg = &tls.Config{
+			GetCertificate:     c.GetCertificate,
+			MinVersion:         tls.VersionTLS12,
+			InsecureSkipVerify: cfg.Insecure, //nolint: gosec
+		}
 	} else {
 		cert, err := tls.LoadX509KeyPair(cfg.Cert, cfg.Key)
 		if err != nil {
 			return err
 		}
 
-		tlscfg = &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
+		tlscfg = &tls.Config{
+			Certificates:       []tls.Certificate{cert},
+			MinVersion:         tls.VersionTLS12,
+			InsecureSkipVerify: cfg.Insecure, //nolint: gosec
+		}
 	}
 
 	s.Server = &http.Server{
